@@ -13,48 +13,48 @@ void inline bareRFM69::chipSelect(bool enable){
 }
 
 void bareRFM69::writeRegister(uint8_t reg, uint8_t data){
-    SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));  // gain control of SPI bus
+    this->_spi->beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));  // gain control of SPI bus
     this->chipSelect(true); // assert chip select
-    SPI.transfer(RFM69_WRITE_REG_MASK | (reg & RFM69_READ_REG_MASK)); 
-    SPI.transfer(data);
+    this->_spi->transfer(RFM69_WRITE_REG_MASK | (reg & RFM69_READ_REG_MASK));
+    this->_spi->transfer(data);
     this->chipSelect(false);// deassert chip select
-    SPI.endTransaction();    // release the SPI bus
+    this->_spi->endTransaction();    // release the SPI bus
 }
 
 uint8_t bareRFM69::readRegister(uint8_t reg){
     uint8_t foo;
-    SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));  // gain control of SPI bus
+    this->_spi->beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));  // gain control of SPI bus
     this->chipSelect(true); // assert chip select
-    SPI.transfer((reg % RFM69_READ_REG_MASK));
-    foo = SPI.transfer(0);
+    this->_spi->transfer((reg % RFM69_READ_REG_MASK));
+    foo = this->_spi->transfer(0);
     this->chipSelect(false);// deassert chip select
-    SPI.endTransaction();    // release the SPI bus
+    this->_spi->endTransaction();    // release the SPI bus
     return foo;
 }
 
 void bareRFM69::writeMultiple(uint8_t reg, void* data, uint8_t len){
-    SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));  // gain control of SPI bus
+    this->_spi->beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));  // gain control of SPI bus
     this->chipSelect(true); // assert chip select
-    SPI.transfer(RFM69_WRITE_REG_MASK | (reg & RFM69_READ_REG_MASK)); 
+    this->_spi->transfer(RFM69_WRITE_REG_MASK | (reg & RFM69_READ_REG_MASK));
     uint8_t* r = reinterpret_cast<uint8_t*>(data);
     for (uint8_t i=0; i < len ; i++){
-        SPI.transfer(r[len - i - 1]);
+        this->_spi->transfer(r[len - i - 1]);
     }
     this->chipSelect(false);// deassert chip select
-    SPI.endTransaction();    // release the SPI bus
+    this->_spi->endTransaction();    // release the SPI bus
 }
 
 void bareRFM69::readMultiple(uint8_t reg, void* data, uint8_t len){
-    SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));  // gain control of SPI bus
+    this->_spi->beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));  // gain control of SPI bus
     this->chipSelect(true); // assert chip select
     
-    SPI.transfer((reg % RFM69_READ_REG_MASK));
+    this->_spi->transfer((reg % RFM69_READ_REG_MASK));
     uint8_t* r = reinterpret_cast<uint8_t*>(data);
     for (uint8_t i=0; i < len ; i++){
-        r[len - i - 1] = SPI.transfer(0);
+        r[len - i - 1] = this->_spi->transfer(0);
     }
     this->chipSelect(false);// deassert chip select
-    SPI.endTransaction();    // release the SPI bus
+    this->_spi->endTransaction();    // release the SPI bus
 }
 
 uint32_t bareRFM69::readRegister32(uint8_t reg){
@@ -75,48 +75,48 @@ uint16_t bareRFM69::readRegister16(uint8_t reg){
 
 void bareRFM69::writeFIFO(void* buffer, uint8_t len){
     uint8_t* r = reinterpret_cast<uint8_t*>(buffer);
-    SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));  // gain control of SPI bus
+    this->_spi->beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));  // gain control of SPI bus
     this->chipSelect(true); // assert chip select
-    SPI.transfer(RFM69_WRITE_REG_MASK | (RFM69_FIFO & RFM69_READ_REG_MASK)); 
+    this->_spi->transfer(RFM69_WRITE_REG_MASK | (RFM69_FIFO & RFM69_READ_REG_MASK));
     for (uint8_t i=0; i < len ; i++){
         // Serial.print("Writing to FIFO: "); Serial.println(r[i]);
-        SPI.transfer(r[i]);
+        this->_spi->transfer(r[i]);
     }
     this->chipSelect(false);// deassert chip select
-    SPI.endTransaction();    // release the SPI bus
+    this->_spi->endTransaction();    // release the SPI bus
 }
 
 void bareRFM69::readFIFO(void* buffer, uint8_t len){
     uint8_t* r = reinterpret_cast<uint8_t*>(buffer);
-    SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));  // gain control of SPI bus
+    this->_spi->beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));  // gain control of SPI bus
     this->chipSelect(true); // assert chip select
     
-    SPI.transfer((RFM69_FIFO % RFM69_READ_REG_MASK));
+    this->_spi->transfer((RFM69_FIFO % RFM69_READ_REG_MASK));
     for (uint8_t i=0; i < len ; i++){
-        r[i] = SPI.transfer(0);
+        r[i] = this->_spi->transfer(0);
     }
     this->chipSelect(false);// deassert chip select
-    SPI.endTransaction();    // release the SPI bus
+    this->_spi->endTransaction();    // release the SPI bus
 }
 
 uint8_t bareRFM69::readVariableFIFO(void* buffer, uint8_t max_length){
     uint8_t* r = reinterpret_cast<uint8_t*>(buffer);
 
-    SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));  // gain control of SPI bus
+    this->_spi->beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));  // gain control of SPI bus
     this->chipSelect(true); // assert chip select
     
-    SPI.transfer((RFM69_FIFO % RFM69_READ_REG_MASK));
-    uint8_t len = SPI.transfer(0);
+    this->_spi->transfer((RFM69_FIFO % RFM69_READ_REG_MASK));
+    uint8_t len = this->_spi->transfer(0);
     r[0] = len;
     // Serial.print("readVariableFIFO, len:"); Serial.println(len);
     len = len > (max_length-1) ? (max_length-1) : len;
     // Serial.print("readVariableFIFO, len:"); Serial.println(len);
     for (uint8_t i=0; i < len; i++){
-        r[i+1] = SPI.transfer(0);
+        r[i+1] = this->_spi->transfer(0);
         // Serial.print("readVariableFIFO, r[i+1]"); Serial.println(r[i+1]);
     }
     this->chipSelect(false);// deassert chip select
-    SPI.endTransaction();    // release the SPI bus
+    this->_spi->endTransaction();    // release the SPI bus
     return len;
 }
 

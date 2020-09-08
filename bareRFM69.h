@@ -34,6 +34,7 @@
 class bareRFM69 {
     private:
         uint8_t cs_pin; // chip select pin.
+        SPIClass* _spi = NULL;
 
 
         // SPI relevant stuff
@@ -49,7 +50,8 @@ class bareRFM69 {
         void inline chipSelect(bool enable);
 
     public:
-        bareRFM69(uint8_t cs_pin){
+        bareRFM69(uint8_t cs_pin, uint8_t spi=HSPI){
+            this->_spi = new SPIClass(spi);
             this->cs_pin = cs_pin;
             pinMode(this->cs_pin, OUTPUT);
             digitalWrite(this->cs_pin, HIGH);
@@ -58,6 +60,10 @@ class bareRFM69 {
             // according to the datasheet.
             // SPISettings(10000000, MSBFIRST, SPI_MODE0)
             // is to be used.
+        };
+
+        void begin() {
+            this->_spi->begin();
         };
 
         uint8_t readRawRegister(uint8_t reg){return this->readRegister(reg);}

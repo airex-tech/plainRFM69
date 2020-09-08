@@ -96,7 +96,7 @@ class plainRFM69 : public bareRFM69{
 
     public:
 
-        plainRFM69(uint8_t cs_pin) : bareRFM69(cs_pin){
+        plainRFM69(uint8_t cs_pin,  uint8_t spi=HSPI) : bareRFM69(cs_pin, spi){
             this->packet_buffer = 0;
             this->buffer_size = 0;
             this->buffer_read_index = 0;
