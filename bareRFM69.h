@@ -2,14 +2,11 @@
  *  Copyright (c) 2014, Ivor Wanders
  *  MIT License, see the LICENSE.md file in the root folder.
 */
-
-
-#include <SPI.h>
-#include <Arduino.h>
-
 #ifndef BARE_RFM69_H
 #define BARE_RFM69_H
 
+#include <SPI.h>
+#include <Arduino.h>
 #include <bareRFM69_const.h>
 
 /*
@@ -38,7 +35,7 @@ class bareRFM69 {
 
 
         // SPI relevant stuff
-        void writeRegister(uint8_t reg, uint8_t data);
+//        void writeRegister(uint8_t reg, uint8_t data);
         void writeMultiple(uint8_t reg, void* data, uint8_t len);
 
         uint8_t readRegister(uint8_t reg);
@@ -50,6 +47,7 @@ class bareRFM69 {
         void inline chipSelect(bool enable);
 
     public:
+        void writeRegister(uint8_t reg, uint8_t data);
         bareRFM69(uint8_t cs_pin, uint8_t spi=HSPI){
             this->_spi = new SPIClass(spi);
             this->cs_pin = cs_pin;
@@ -62,8 +60,8 @@ class bareRFM69 {
             // is to be used.
         };
 
-        void begin() {
-            this->_spi->begin();
+        void begin(uint8_t sclk, uint8_t miso, uint8_t mosi, uint8_t ss) {
+            this->_spi->begin(sclk, miso, mosi, ss);
         };
 
         uint8_t readRawRegister(uint8_t reg){return this->readRegister(reg);}
